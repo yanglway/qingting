@@ -6,31 +6,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
       text-align: center;
-      background: #f8f8f8;
+      color: #333;
+    }
+
+    header {
+      background: #5c9ded;
+      color: #fff;
       padding: 20px;
-    }
-    h1 {
       font-size: 24px;
-      margin-bottom: 20px;
+      font-weight: bold;
     }
+
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
     iframe {
       width: 100%;
       height: 500px;
       border: none;
       border-radius: 12px;
-      max-width: 800px;
+      margin-top: 20px;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 10px;
+      font-size: 16px;
+      color: #666;
+    }
+
+    .highlight {
+      color: #d44;
+      font-weight: bold;
+    }
+
+    #wxTip {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      z-index: 9999;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    #wxTip img {
+      width: 80%;
+      max-width: 300px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>蜻蜓字花直播开奖</h1>
+  <header>蜻蜓字花直播开奖</header>
 
-  <!-- 嵌入 Twitch 直播 -->
-  <iframe
-    src="https://player.twitch.tv/?channel=qingtin168&parent=qingtin.netlify.app"
-    allowfullscreen>
-  </iframe>
+  <div class="container">
+    <!-- 嵌入 Twitch 直播 -->
+    <iframe
+      src="https://player.twitch.tv/?channel=qingtin168&parent=qingtin.netlify.app"
+      allowfullscreen>
+    </iframe>
+
+    <!-- 微信号展示 -->
+    <footer>
+      联系微信：<span class="highlight">zhuyibi2</span>
+    </footer>
+  </div>
+
+  <!-- 微信浏览器打开提示 -->
+  <div id="wxTip">
+    <p>请点击右上角「<strong>•••</strong>」，选择<br>「<strong>在浏览器中打开</strong>」</p>
+    <img src="https://i.imgur.com/3R1DQpP.png" alt="请在浏览器中打开">
+  </div>
+
+  <script>
+    // 判断是否微信内打开
+    function isWeChat() {
+      var ua = navigator.userAgent.toLowerCase();
+      return ua.indexOf('micromessenger') !== -1;
+    }
+
+    if (isWeChat()) {
+      document.getElementById('wxTip').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
