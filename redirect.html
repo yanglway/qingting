@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>跳转中…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h2 { line-height: 1.6; }
+  </style>
+  <script>
+    const targetUrl = "https://qingtin.netlify.app/";
+    const ua = navigator.userAgent.toLowerCase();
+    const isWeChat = ua.includes("micromessenger");
+    if (isWeChat) {
+      // 微信内：提示用户手动打开系统浏览器
+      document.write(`
+        <h2>请点击右上角「⋯」<br>选择“在浏览器中打开”<br>以获得最佳观看体验</h2>
+      `);
+    } else {
+      // 非微信：自动跳转
+      window.location.href = targetUrl;
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>
