@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>财神2D</title>
-
-<!-- ✅ 每 5 秒自动刷新 -->
 <meta http-equiv="refresh" content="5">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -25,13 +23,11 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 30px;
 }
 
 header h1 {
     font-size: 3.5em;
     color: #ffd700;
-    text-shadow: 0 0 20px rgba(255,215,0,.6);
 }
 
 .datetime {
@@ -39,22 +35,18 @@ header h1 {
     margin-top: 10px;
 }
 
-/* 说明 */
 .notice {
     background: rgba(255,215,0,.08);
     border-left: 4px solid #ffd700;
     padding: 15px;
     margin: 20px 0;
-    font-size: .95em;
-    color: #ddd;
 }
 
-/* 开奖区 */
 .lottery-box {
     display: flex;
     justify-content: center;
     gap: 80px;
-    margin-bottom: 20px;
+    margin: 30px 0;
 }
 
 .ball {
@@ -86,36 +78,12 @@ header h1 {
     text-align: center;
     font-size: 1.4em;
     color: #ffd700;
-    margin-bottom: 10px;
-}
-
-/* 直播 */
-.live-btn {
-    display: block;
-    width: fit-content;
-    margin: 20px auto;
-    background: #e94560;
-    color: #fff;
-    padding: 14px 40px;
-    border-radius: 30px;
-    text-decoration: none;
-    font-size: 1.2em;
-}
-
-/* 历史 */
-.history {
-    margin-top: 40px;
-}
-
-.history h2 {
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 th, td {
@@ -130,13 +98,6 @@ th {
 
 td.num {
     font-size: 1.4em;
-    font-weight: bold;
-}
-
-footer {
-    text-align: center;
-    margin-top: 40px;
-    color: #555;
 }
 </style>
 </head>
@@ -144,35 +105,22 @@ footer {
 <body>
 
 <div class="container">
+    <header>
+        <h1>🧧 财神2D 🧧</h1>
+        <div class="datetime" id="datetime"></div>
+    </header>
 
-<header>
-    <h1>🧧 财神2D 🧧</h1>
-    <div class="datetime" id="datetime"></div>
-</header>
+    <div class="notice">
+        📢 本页面数据来自 GitHub 公共配置，适合多设备同步展示。
+    </div>
 
-<!-- 说明 -->
-<div class="notice">
-    📢 本页面为财神2D官方开奖结果展示，<br>
-    缅甸时间晚上6:30封盘7:00开奖
-</div>
+    <div class="period" id="period"></div>
 
-<!-- 期号 -->
-<div class="period" id="period"></div>
+    <div class="lottery-box">
+        <div class="ball red" id="b1"></div>
+        <div class="ball blue" id="b2"></div>
+    </div>
 
-<!-- 开奖球 -->
-<div class="lottery-box">
-    <div class="ball red" id="b1"></div>
-    <div class="ball blue" id="b2"></div>
-</div>
-
-<!-- 直播 -->
-<a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="live-btn">
-    🔴 进入直播间
-</a>
-
-<!-- 历史 -->
-<div class="history">
-    <h2>📋 开奖记录</h2>
     <table>
         <thead>
             <tr>
@@ -181,67 +129,37 @@ footer {
                 <th>结果</th>
             </tr>
         </thead>
-        <tbody id="historyBody"></tbody>
+        <tbody id="history"></tbody>
     </table>
 </div>
 
-<footer>© 财神2D 全球开奖展示</footer>
-
-</div>
-
 <script>
-/* ===============================
-   ✅ 唯一需要修改的地方
-=============================== */
-const CONFIG = {
-    period: 5,      // 第几期
-    num1: 3,         // 第一个球（0-9）
-    num2: 8          // 第二个球（0-9）
-};
-/* =============================== */
+const jsonUrl =
+  "https://raw.githubusercontent.com/你的用户名/你的仓库名/main/results.json";
 
-const now = new Date();
-const timeStr =
-    now.toLocaleDateString("zh-CN") + " " +
-    now.toLocaleTimeString("zh-CN");
+fetch(jsonUrl)
+.then(res => res.json())
+.then(data => {
+    document.getElementById("period").innerText = `第${data.period}期`;
+    document.getElementById("b1").innerText = data.num1;
+    document.getElementById("b2").innerText = data.num2;
+    document.getElementById("datetime").innerText = data.time;
 
-document.getElementById("datetime").innerText = timeStr;
-document.getElementById("period").innerText = `第${CONFIG.period}期`;
+    setTimeout(() => {
+        document.getElementById("b1").classList.add("show");
+        document.getElementById("b2").classList.add("show");
+    }, 100);
 
-const b1 = document.getElementById("b1");
-const b2 = document.getElementById("b2");
-
-b1.innerText = CONFIG.num1;
-b2.innerText = CONFIG.num2;
-
-setTimeout(() => {
-    b1.classList.add("show");
-    b2.classList.add("show");
-}, 100);
-
-/* 历史 */
-const historyKey = "caishen_history";
-let history = JSON.parse(localStorage.getItem(historyKey) || "[]");
-
-const exists = history.find(h => h.period === CONFIG.period);
-if (!exists) {
-    history.unshift({
-        period: CONFIG.period,
-        time: timeStr,
-        nums: `${CONFIG.num1} ${CONFIG.num2}`
+    const tbody = document.getElementById("history");
+    data.history.forEach(r => {
+        tbody.innerHTML += `
+            <tr>
+                <td>第${r.period}期</td>
+                <td>${r.time}</td>
+                <td class="num">${r.num1} ${r.num2}</td>
+            </tr>
+        `;
     });
-    localStorage.setItem(historyKey, JSON.stringify(history.slice(0, 30)));
-}
-
-const tbody = document.getElementById("historyBody");
-history.forEach(r => {
-    tbody.innerHTML += `
-        <tr>
-            <td>第${r.period}期</td>
-            <td>${r.time}</td>
-            <td class="num">${r.nums}</td>
-        </tr>
-    `;
 });
 </script>
 
