@@ -1,82 +1,155 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>蜻蜓字花直播开奖</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
+<meta charset="UTF-8">
+<title>财神2D</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, sans-serif;
-      margin: 0;
-      background: #f9f9f9;
-      color: #333;
-      text-align: center;
-      padding: 20px;
+        font-family: "Microsoft YaHei", sans-serif;
+        background: radial-gradient(circle at top, #2b2b2b, #0f0f0f);
+        min-height: 100vh;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
+
     header {
-      background: #5c9ded;
-      color: white;
-      padding: 20px 0;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      margin-bottom: 25px;
+        margin-top: 40px;
+        text-align: center;
     }
-    .container {
-      max-width: 800px;
-      margin: auto;
+
+    header h1 {
+        font-size: 3.5em;
+        color: #ffd700;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
     }
-    iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      margin-bottom: 30px;
+
+    header p {
+        color: #ccc;
+        margin-top: 10px;
+        font-size: 1.1em;
     }
-    .time-info {
-      background: #eaf2ff;
-      padding: 20px;
-      border-radius: 12px;
-      font-size: 18px;
-      line-height: 1.6;
-      color: #0a3d91;
-      box-shadow: 0 2px 8px rgba(10, 61, 145, 0.2);
-      margin-bottom: 40px;
-      font-weight: 600;
+
+    /* 开奖区 */
+    .lottery-box {
+        margin-top: 50px;
+        display: flex;
+        gap: 60px;
     }
+
+    .ball {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        font-size: 5em;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,.5);
+        transition: all .5s ease;
+    }
+
+    .ball.red {
+        background: radial-gradient(circle at 30% 30%, #ff4d4d, #b30000);
+    }
+
+    .ball.blue {
+        background: radial-gradient(circle at 30% 30%, #4da6ff, #003366);
+    }
+
+    .label {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 1.2em;
+        color: #aaa;
+    }
+
+    /* 期号 */
+    .period {
+        margin-top: 40px;
+        font-size: 1.4em;
+        color: #ffd700;
+    }
+
+    /* 底部提示 */
     footer {
-      color: #666;
-      font-size: 16px;
-      margin-top: 20px;
-      letter-spacing: 0.05em;
+        margin-top: auto;
+        padding: 20px;
+        color: #666;
+        font-size: 0.9em;
     }
-    footer .highlight {
-      color: #d44;
-      font-weight: bold;
+
+    /* 展示动画 */
+    .show {
+        animation: pop 0.6s ease;
     }
-  </style>
+
+    @keyframes pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        60% { transform: scale(1.2); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
 </head>
+
 <body>
-  <header>蜻蜓字花直播开奖</header>
 
-  <div class="container">
-    <iframe
-      src="https://player.twitch.tv/?channel=qingtin168&parent=qingtin.netlify.app"
-      allowfullscreen
-    ></iframe>
+<header>
+    <h1>🧧 财神2D 🧧</h1>
+    <p>公平公正 · 官方开奖结果展示</p>
+</header>
 
-    <div class="time-info">
-      <p>🔔 <strong>开奖时间说明</strong></p>
-      <p>上场开奖时间：缅甸时间 <strong>12:30</strong></p>
-      <p>下场开奖时间：缅甸时间 <strong>19:30</strong></p>
-      <p>⏰ 提前半小时封盘，开始直播开奖</p>
+<!-- 期号 -->
+<div class="period" id="period">期号：20260121001</div>
+
+<!-- 开奖球 -->
+<div class="lottery-box">
+    <div>
+        <div class="ball red" id="num1">?</div>
+        <div class="label">第一位</div>
     </div>
+    <div>
+        <div class="ball blue" id="num2">?</div>
+        <div class="label">第二位</div>
+    </div>
+</div>
 
-    <footer>
-      联系微信：<span class="highlight">zhuyibi2</span>
-    </footer>
-  </div>
+<footer>
+    本页面仅用于开奖结果展示，数据来源官方
+</footer>
+
+<script>
+    /* ==========================
+       ✅ 后台自定义开奖结果
+       修改这里即可
+    ========================== */
+    function setResult(n1, n2) {
+        document.getElementById("num1").innerText = n1;
+        document.getElementById("num2").innerText = n2;
+
+        document.getElementById("num1").classList.add("show");
+        document.getElementById("num2").classList.add("show");
+    }
+
+    /* 示例：设置开奖结果为 3 和 7 */
+    setResult(3, 7);
+
+    /* 自动生成期号（年月日+序号） */
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    document.getElementById("period").innerText =
+        `期号：${y}${m}${d}001`;
+</script>
+
 </body>
 </html>
