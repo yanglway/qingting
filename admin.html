@@ -3,1011 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>开奖后台管理系统</title>
+    <title>开奖后台管理</title>
     <style>
-        /* 基础样式 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        /* 头部样式 */
-        .header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 { 
-            font-size: 24px; 
-            margin-bottom: 8px; 
-        }
-        
-        /* 选项卡样式 */
-        .tabs {
-            display: flex;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 15px 20px;
-            text-align: center;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .tab:hover {
-            background: #f9fafb;
-        }
-        
-        .tab.active {
-            border-bottom: 3px solid #4f46e5;
-            font-weight: 600;
-            color: #4f46e5;
-        }
-        
-        /* 内容区样式 */
-        .tab-content {
-            display: none;
-            padding: 30px;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* 表单样式 */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #374151;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-        
-        /* 按钮样式 */
-        .btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-        }
-        
-        /* 状态提示 */
-        .status {
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            display: none;
-        }
-        
-        .status.success {
-            display: block;
-            background: #d1fae5;
-            color: #065f46;
-            border: 2px solid #a7f3d0;
-        }
-        
-        .status.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid #fca5a5;
-        }
-        
-        .status.info {
-            display: block;
-            background: #dbeafe;
-            color: #1e40af;
-            border: 2px solid #bfdbfe;
-        }
-        
-        /* 加载中 */
-        .loading {
-            padding: 12px;
-            text-align: center;
-            color: #6b7280;
-        }
-        
-        /* 当前数据显示 */
-        .current-data {
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        
-        .current-data h3 {
-            margin-bottom: 10px;
-            color: #374151;
-        }
-        
-        .data-item {
-            padding: 10px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        
-        /* 历史记录 */
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        
-        .history-item {
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-        
-        /* 操作按钮组 */
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        /* 警告框 */
-        .warning {
-            background: #fef3c7;
-            border: 2px solid #fbbf24;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        
-        /* 网格布局 */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; padding: 30px; text-align: center; }
+        .tabs { display: flex; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; }
+        .tab.active { border-bottom: 3px solid #4f46e5; color: #4f46e5; background: white; }
+        .content { display: none; padding: 30px; }
+        .content.active { display: block; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #374151; }
+        input { width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; }
+        input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .status { padding: 12px; border-radius: 8px; margin-top: 20px; text-align: center; display: none; }
+        .success { display: block; background: #d1fae5; color: #065f46; border: 2px solid #a7f3d0; }
+        .error { display: block; background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
+        .info { display: block; background: #dbeafe; color: #1e40af; border: 2px solid #bfdbfe; }
+        .current-data { background: #f9fafb; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .history-item { padding: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 头部 -->
         <div class="header">
-            <h1>🎯 开奖后台管理系统</h1>
+            <h1>🎯 开奖后台管理</h1>
             <p>yanglway / qingting</p>
         </div>
         
-        <!-- 选项卡 -->
         <div class="tabs">
             <div class="tab active" onclick="showTab('add')">添加开奖</div>
             <div class="tab" onclick="showTab('undo')">撤回记录</div>
-            <div class="tab" onclick="showTab('history')">历史版本</div>
             <div class="tab" onclick="showTab('logs')">操作日志</div>
         </div>
         
-        <!-- Tab 1: 添加开奖 -->
-        <div id="tab-add" class="tab-content active">
-            <h2 style="margin-bottom: 20px;">添加新开奖记录</h2>
-            
-            <div class="warning">
-                <strong>⚠️ 重要提示：</strong>
-                请仔细核对开奖信息，提交后前台页面会立即更新
-            </div>
-            
-            <div class="form-group">
+        <!-- 添加开奖 -->
+        <div id="tab-add" class="content active">
+            <h2>添加新开奖</h2>
+            <div class="input-group">
                 <label>开奖期号</label>
                 <input type="number" id="period" placeholder="例如: 8">
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>开奖号码 1</label>
-                    <input type="number" id="num1" placeholder="号码1">
-                </div>
-                <div class="form-group">
-                    <label>开奖号码 2</label>
-                    <input type="number" id="num2" placeholder="号码2">
-                </div>
+            <div class="input-group">
+                <label>开奖号码 1</label>
+                <input type="number" id="num1" placeholder="号码1">
             </div>
-            
-            <div class="form-group">
+            <div class="input-group">
+                <label>开奖号码 2</label>
+                <input type="number" id="num2" placeholder="号码2">
+            </div>
+            <div class="input-group">
                 <label>开奖时间</label>
                 <input type="datetime-local" id="time">
             </div>
-            
-            <div class="button-group">
-                <button class="btn" onclick="addLottery()">提交开奖</button>
-                <button class="btn btn-secondary" onclick="loadCurrentData()">刷新数据</button>
-            </div>
-            
+            <button class="btn" onclick="addLottery()">提交开奖</button>
             <div id="add-status" class="status"></div>
-            <div id="add-loading" class="loading" style="display: none;">处理中...</div>
-            
-            <div class="current-data">
-                <h3>📊 当前最新开奖</h3>
-                <div id="current-lottery">正在加载...</div>
-            </div>
         </div>
         
-        <!-- Tab 2: 撤回记录 -->
-        <div id="tab-undo" class="tab-content">
-            <h2 style="margin-bottom: 20px;">撤回开奖记录</h2>
-            
-            <div class="warning">
-                <strong>⚠️ 撤回操作说明：</strong>
-                撤回最近一次开奖记录，将恢复到前一个状态
-            </div>
-            
+        <!-- 撤回记录 -->
+        <div id="tab-undo" class="content">
+            <h2>撤回最近一次开奖</h2>
+            <p>此操作将删除最新的开奖记录，并恢复到上一条。</p>
             <div class="current-data">
-                <h3>当前最新开奖</h3>
-                <div id="undo-current">正在加载...</div>
-                
-                <h3 style="margin-top: 20px;">历史记录（前5条）</h3>
-                <div id="undo-history" class="history-list"></div>
+                <h3>当前最新记录</h3>
+                <div id="undo-info">加载中...</div>
             </div>
-            
-            <div class="button-group">
-                <button class="btn btn-danger" onclick="undoLastLottery()">撤回最近一次开奖</button>
-                <button class="btn" onclick="showTab('add')">返回添加页面</button>
-            </div>
-            
+            <button class="btn btn-danger" onclick="undoLottery()">确认撤回</button>
             <div id="undo-status" class="status"></div>
-            <div id="undo-loading" class="loading" style="display: none;">处理中...</div>
         </div>
         
-        <!-- Tab 3: 历史版本 -->
-        <div id="tab-history" class="tab-content">
-            <h2 style="margin-bottom: 20px;">历史版本管理</h2>
-            
-            <div class="warning">
-                <strong>⚠️ 版本恢复说明：</strong>
-                可以恢复到任意历史版本，但会覆盖当前数据
-            </div>
-            
-            <div class="current-data">
-                <h3>📅 版本历史列表</h3>
-                <div id="version-list" class="history-list"></div>
-            </div>
-            
-            <div class="button-group">
-                <button class="btn" onclick="loadVersions()">刷新版本列表</button>
-                <button class="btn btn-secondary" onclick="showTab('add')">返回</button>
-            </div>
-            
-            <div id="history-status" class="status"></div>
-        </div>
-        
-        <!-- Tab 4: 操作日志 -->
-        <div id="tab-logs" class="tab-content">
-            <h2 style="margin-bottom: 20px;">操作日志</h2>
-            
-            <div class="current-data">
-                <h3>📋 最近操作记录</h3>
-                <div id="log-list" class="history-list"></div>
-            </div>
-            
-            <div class="button-group">
-                <button class="btn" onclick="loadLogs()">刷新日志</button>
-                <button class="btn btn-secondary" onclick="clearLogs()">清空本地日志</button>
-            </div>
-            
-            <div id="log-status" class="status"></div>
+        <!-- 操作日志 -->
+        <div id="tab-logs" class="content">
+            <h2>操作日志</h2>
+            <div id="log-list"></div>
         </div>
     </div>
 
     <script>
-        // ================================================
-        // 配置区域（必须修改！）
-        // ================================================
+        // ==========================================
+        // ⚙️ 配置区（已根据你的仓库修正）
+        // ==========================================
         const CONFIG = {
-            GITHUB_USER: "yanglway",      // 你的GitHub用户名
-            REPO_NAME: "qingting",        // 你的仓库名
-            FILE_PATH: "result.json",     // 开奖数据文件路径
-            ADMIN_PASSWORD: "123456",     // 后台登录密码（可以修改）
-            BRANCH: "main"                // 仓库分支，默认main
+            USER: "yanglway",
+            REPO: "qingting",
+            // 关键修正：文件在 data 文件夹下
+            FILE_PATH: "data/result.json", 
+            ADMIN_PASS: "123456" 
         };
         
-        // GitHub API 地址
-        const API_URL = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.FILE_PATH}`;
+        const API_URL = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE_PATH}`;
         
-        // ================================================
-        // 全局变量
-        // ================================================
-        let githubToken = "";
-        let currentFileSha = "";
-        let currentData = {};
-        let logs = JSON.parse(localStorage.getItem('lottery_logs') || '[]');
-        
-        // ================================================
-        // 初始化函数
-        // ================================================
+        let token = "";
+        let currentSha = "";
+
+        // ==========================================
+        // 🚀 初始化
+        // ==========================================
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 检查密码
-            const password = prompt("请输入后台管理密码：");
-            if (password !== CONFIG.ADMIN_PASSWORD) {
-                alert("密码错误！访问被拒绝。");
-                window.location.href = "https://github.com/yanglway";
+            const pass = prompt("请输入后台密码：");
+            if (pass !== CONFIG.ADMIN_PASS) {
+                alert("密码错误！");
+                window.location.href = "https://github.com";
                 return;
             }
             
-            // 2. 加载当前数据
-            loadCurrentData();
-            
-            // 3. 设置默认时间
+            // 设置默认时间为现在
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById("time").value = now.toISOString().slice(0, 16);
             
-            // 4. 加载日志
+            loadCurrentData();
             loadLogs();
         });
-        
-        // ================================================
-        // 选项卡切换
-        // ================================================
+
         function showTab(tabName) {
-            // 隐藏所有选项卡
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // 激活选中的选项卡
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
             document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
-            // 如果切换到撤回页面，加载数据
-            if (tabName === 'undo') {
-                loadUndoData();
-            }
+            if (tabName === 'undo') loadUndoData();
         }
-        
-        // ================================================
-        // 核心功能：添加开奖记录
-        // ================================================
-        async function addLottery() {
-            // 获取输入值
-            const period = document.getElementById("period").value.trim();
-            const num1 = document.getElementById("num1").value.trim();
-            const num2 = document.getElementById("num2").value.trim();
-            const timeInput = document.getElementById("time").value;
-            
-            // 验证输入
-            if (!period || !num1 || !num2 || !timeInput) {
-                showStatus("add-status", "请填写所有字段！", "error");
-                return;
-            }
-            
-            // 验证期号必须是数字
-            if (isNaN(period) || isNaN(num1) || isNaN(num2)) {
-                showStatus("add-status", "期号和号码必须是数字！", "error");
-                return;
-            }
-            
-            // 获取GitHub Token
-            githubToken = prompt("请输入 GitHub Token：\n（从 https://github.com/settings/tokens 获取）");
-            if (!githubToken) {
-                showStatus("add-status", "需要 GitHub Token 才能提交", "error");
-                return;
-            }
-            
-            // 显示加载中
-            document.getElementById("add-loading").style.display = "block";
-            document.getElementById("add-status").style.display = "none";
-            
-            try {
-                // 1. 备份当前数据
-                await backupCurrentData();
-                
-                // 2. 获取当前文件信息
-                const fileInfo = await fetchGitHubFile();
-                currentFileSha = fileInfo.sha;
-                
-                // 3. 解析当前数据
-                const currentContent = JSON.parse(atob(fileInfo.content));
-                
-                // 4. 创建新开奖记录
-                const time = new Date(timeInput).toLocaleString("zh-CN");
-                const newEntry = {
-                    period: parseInt(period),
-                    num1: parseInt(num1),
-                    num2: parseInt(num2),
-                    time: time
-                };
-                
-                // 5. 检查期号是否重复
-                if (currentContent.history && currentContent.history.some(item => item.period == period)) {
-                    if (!confirm(`第 ${period} 期已存在，是否覆盖？`)) {
-                        throw new Error("操作已取消");
-                    }
-                }
-                
-                // 6. 更新数据
-                const updatedContent = {
-                    period: newEntry.period,
-                    num1: newEntry.num1,
-                    num2: newEntry.num2,
-                    time: newEntry.time,
-                    history: [newEntry, ...(currentContent.history || [])]
-                };
-                
-                // 7. 提交到GitHub
-                const result = await updateGitHubFile(updatedContent, `开奖更新: 第 ${period} 期`);
-                
-                if (result) {
-                    // 记录日志
-                    addLog({
-                        action: "add",
-                        period: period,
-                        num1: num1,
-                        num2: num2,
-                        time: time,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    showStatus("add-status", `✅ 第 ${period} 期开奖结果已更新！`, "success");
-                    
-                    // 清空表单
-                    document.getElementById("num1").value = "";
-                    document.getElementById("num2").value = "";
-                    
-                    // 自动填充下一期
-                    document.getElementById("period").value = parseInt(period) + 1;
-                    
-                    // 重新加载数据
-                    setTimeout(() => {
-                        loadCurrentData();
-                    }, 1000);
-                } else {
-                    throw new Error("提交失败");
-                }
-                
-            } catch (error) {
-                showStatus("add-status", `❌ 错误: ${error.message}`, "error");
-            } finally {
-                document.getElementById("add-loading").style.display = "none";
-            }
+
+        // ==========================================
+        // 📥 读取数据
+        // ==========================================
+        async function fetchFile() {
+            const res = await fetch(API_URL, { headers: { Authorization: `token ${token}` } });
+            if (!res.ok) throw new Error("无法读取文件，检查Token权限或文件路径");
+            const data = await res.json();
+            currentSha = data.sha;
+            return JSON.parse(atob(data.content));
         }
-        
-        // ================================================
-        // 核心功能：撤回最近一次开奖
-        // ================================================
-        async function undoLastLottery() {
-            if (!confirm("⚠️ 确定要撤回最近一次开奖吗？\n此操作不可逆！")) {
-                return;
-            }
-            
-            // 获取GitHub Token
-            if (!githubToken) {
-                githubToken = prompt("请输入 GitHub Token：");
-                if (!githubToken) {
-                    showStatus("undo-status", "需要 GitHub Token 才能操作", "error");
-                    return;
-                }
-            }
-            
-            // 显示加载中
-            document.getElementById("undo-loading").style.display = "block";
-            document.getElementById("undo-status").style.display = "none";
-            
-            try {
-                // 1. 备份当前数据
-                await backupCurrentData();
-                
-                // 2. 获取当前文件信息
-                const fileInfo = await fetchGitHubFile();
-                currentFileSha = fileInfo.sha;
-                
-                // 3. 解析当前数据
-                const currentContent = JSON.parse(atob(fileInfo.content));
-                
-                // 4. 检查是否有历史记录
-                if (!currentContent.history || currentContent.history.length === 0) {
-                    throw new Error("没有可撤回的历史记录");
-                }
-                
-                // 5. 移除最近一条记录
-                const removed = currentContent.history.shift(); // 移除第一条（最新的）
-                
-                // 6. 更新数据
-                let updatedContent;
-                if (currentContent.history.length > 0) {
-                    // 如果有其他记录，取第一条作为最新
-                    const latest = currentContent.history[0];
-                    updatedContent = {
-                        period: latest.period,
-                        num1: latest.num1,
-                        num2: latest.num2,
-                        time: latest.time,
-                        history: currentContent.history
-                    };
-                } else {
-                    // 如果没有历史记录了，清空数据
-                    updatedContent = {
-                        period: 0,
-                        num1: 0,
-                        num2: 0,
-                        time: "",
-                        history: []
-                    };
-                }
-                
-                // 7. 提交到GitHub
-                const result = await updateGitHubFile(updatedContent, `撤回开奖: 第 ${removed.period} 期`);
-                
-                if (result) {
-                    // 记录日志
-                    addLog({
-                        action: "undo",
-                        period: removed.period,
-                        num1: removed.num1,
-                        num2: removed.num2,
-                        time: removed.time,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    showStatus("undo-status", `✅ 已撤回第 ${removed.period} 期开奖`, "success");
-                    
-                    // 重新加载数据
-                    setTimeout(() => {
-                        loadCurrentData();
-                        loadUndoData();
-                    }, 1000);
-                } else {
-                    throw new Error("撤回失败");
-                }
-                
-            } catch (error) {
-                showStatus("undo-status", `❌ 错误: ${error.message}`, "error");
-            } finally {
-                document.getElementById("undo-loading").style.display = "none";
-            }
-        }
-        
-        // ================================================
-        // 辅助功能：备份当前数据
-        // ================================================
-        async function backupCurrentData() {
-            try {
-                const backup = {
-                    timestamp: new Date().toISOString(),
-                    data: currentData
-                };
-                
-                // 保存到本地存储
-                const backups = JSON.parse(localStorage.getItem('lottery_backups') || '[]');
-                backups.unshift(backup);
-                
-                // 只保留最近10个备份
-                if (backups.length > 10) {
-                    backups.pop();
-                }
-                
-                localStorage.setItem('lottery_backups', JSON.stringify(backups));
-                
-                // 也尝试保存到GitHub（可选）
-                try {
-                    if (githubToken) {
-                        await createBackupFile(backup);
-                    }
-                } catch (e) {
-                    console.log("云端备份失败，但本地备份已保存");
-                }
-                
-            } catch (error) {
-                console.error("备份失败:", error);
-            }
-        }
-        
-        // ================================================
-        // 数据加载函数
-        // ================================================
-        async function loadCurrentData() {
-            try {
-                const url = `https://${CONFIG.GITHUB_USER}.github.io/${CONFIG.REPO_NAME}/${CONFIG.FILE_PATH}?t=${Date.now()}`;
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error("无法加载开奖数据");
-                }
-                
-                const data = await response.json();
-                currentData = data;
-                
-                // 显示当前最新开奖
-                document.getElementById("current-lottery").innerHTML = `
-                    <div class="data-item">
-                        <strong>第 ${data.period} 期</strong><br>
-                        号码: ${data.num1}, ${data.num2}<br>
-                        时间: ${data.time}<br>
-                        历史记录: ${data.history ? data.history.length : 0} 条
-                    </div>
-                `;
-                
-                // 自动填充下一期期号
-                document.getElementById("period").value = data.period + 1;
-                
-            } catch (error) {
-                document.getElementById("current-lottery").innerHTML = `
-                    <div class="data-item" style="color: #ef4444;">
-                        加载失败: ${error.message}<br>
-                        请检查网络连接或文件是否存在
-                    </div>
-                `;
-                // 如果获取失败，从1开始
-                document.getElementById("period").value = 1;
-            }
-        }
-        
-        async function loadUndoData() {
-            try {
-                const url = `https://${CONFIG.GITHUB_USER}.github.io/${CONFIG.REPO_NAME}/${CONFIG.FILE_PATH}?t=${Date.now()}`;
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error("无法加载数据");
-                }
-                
-                const data = await response.json();
-                
-                // 显示当前最新
-                document.getElementById("undo-current").innerHTML = `
-                    <div class="data-item">
-                        <strong>第 ${data.period} 期</strong><br>
-                        号码: ${data.num1}, ${data.num2}<br>
-                        时间: ${data.time}<br>
-                        历史记录总数: ${data.history ? data.history.length : 0} 条
-                    </div>
-                `;
-                
-                // 显示历史记录
-                let historyHtml = "";
-                if (data.history && data.history.length > 0) {
-                    data.history.slice(0, 5).forEach((item, index) => {
-                        historyHtml += `
-                            <div class="history-item">
-                                <strong>#${index + 1}: 第 ${item.period} 期</strong><br>
-                                号码: ${item.num1}, ${item.num2}<br>
-                                时间: ${item.time}
-                            </div>
-                        `;
-                    });
-                    
-                    if (data.history.length > 5) {
-                        historyHtml += `<div style="text-align: center; color: #6b7280;">... 还有 ${data.history.length - 5} 条记录</div>`;
-                    }
-                } else {
-                    historyHtml = `<div class="history-item">暂无历史记录</div>`;
-                }
-                
-                document.getElementById("undo-history").innerHTML = historyHtml;
-                
-            } catch (error) {
-                document.getElementById("undo-current").innerHTML = `
-                    <div class="data-item" style="color: #ef4444;">
-                        加载失败: ${error.message}
-                    </div>
-                `;
-            }
-        }
-        
-        // ================================================
-        // 历史版本管理
-        // ================================================
-        async function loadVersions() {
-            if (!githubToken) {
-                githubToken = prompt("请输入 GitHub Token 查看版本历史：");
-                if (!githubToken) {
-                    showStatus("history-status", "需要 Token 才能查看版本历史", "error");
-                    return;
-                }
-            }
-            
-            try {
-                const url = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/commits?path=${CONFIG.FILE_PATH}`;
-                const response = await fetch(url, {
-                    headers: { Authorization: `token ${githubToken}` }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`无法获取版本历史: ${response.status}`);
-                }
-                
-                const commits = await response.json();
-                
-                let html = "";
-                commits.forEach((commit, index) => {
-                    const date = new Date(commit.commit.author.date).toLocaleString("zh-CN");
-                    html += `
-                        <div class="history-item">
-                            <div><strong>版本 ${commits.length - index}</strong></div>
-                            <div>${commit.commit.message}</div>
-                            <div class="timestamp">${date} - ${commit.commit.author.name}</div>
-                            <div style="margin-top: 5px;">
-                                <button class="btn" style="padding: 5px 10px; font-size: 12px;" 
-                                        onclick="restoreToVersion('${commit.sha}')">
-                                    恢复到此版本
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                document.getElementById("version-list").innerHTML = html;
-                
-            } catch (error) {
-                document.getElementById("version-list").innerHTML = `
-                    <div class="history-item" style="color: #ef4444;">
-                        获取失败: ${error.message}
-                    </div>
-                `;
-            }
-        }
-        
-        async function restoreToVersion(commitSha) {
-            if (!confirm("⚠️ 确定要恢复到此版本吗？\n当前数据将被覆盖！")) {
-                return;
-            }
-            
-            try {
-                // 备份当前数据
-                await backupCurrentData();
-                
-                // 获取指定版本的文件内容
-                const url = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.FILE_PATH}?ref=${commitSha}`;
-                const response = await fetch(url, {
-                    headers: { Authorization: `token ${githubToken}` }
-                });
-                
-                if (!response.ok) {
-                    throw new Error("无法获取版本内容");
-                }
-                
-                const versionFile = await response.json();
-                const content = atob(versionFile.content);
-                
-                // 获取当前文件的SHA
-                const currentFileInfo = await fetchGitHubFile();
-                
-                // 恢复到此版本
-                const result = await updateGitHubFile(JSON.parse(content), `恢复历史版本: ${commitSha.substring(0, 7)}`);
-                
-                if (result) {
-                    // 记录日志
-                    addLog({
-                        action: "restore",
-                        commitSha: commitSha.substring(0, 7),
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    showStatus("history-status", "✅ 已恢复到指定版本", "success");
-                    
-                    // 重新加载数据
-                    setTimeout(() => {
-                        loadCurrentData();
-                        loadUndoData();
-                        showTab('add');
-                    }, 2000);
-                }
-                
-            } catch (error) {
-                showStatus("history-status", `❌ 恢复失败: ${error.message}`, "error");
-            }
-        }
-        
-        // ================================================
-        // 操作日志管理
-        // ================================================
-        function loadLogs() {
-            let html = "";
-            
-            if (logs.length === 0) {
-                html = `<div class="history-item">暂无操作日志</div>`;
-            } else {
-                logs.forEach((log, index) => {
-                    const time = new Date(log.timestamp).toLocaleString("zh-CN");
-                    let actionText = "";
-                    
-                    switch (log.action) {
-                        case "add":
-                            actionText = `📝 添加了第 ${log.period} 期开奖 (${log.num1}, ${log.num2})`;
-                            break;
-                        case "undo":
-                            actionText = `↩️ 撤回了第 ${log.period} 期开奖`;
-                            break;
-                        case "restore":
-                            actionText = `⏪ 恢复了历史版本 ${log.commitSha}`;
-                            break;
-                        default:
-                            actionText = `📋 ${log.action}`;
-                    }
-                    
-                    html += `
-                        <div class="history-item">
-                            <div><strong>${actionText}</strong></div>
-                            <div class="timestamp">${time}</div>
-                        </div>
-                    `;
-                });
-            }
-            
-            document.getElementById("log-list").innerHTML = html;
-        }
-        
-        function addLog(log) {
-            logs.unshift(log);
-            
-            // 只保留最近50条日志
-            if (logs.length > 50) {
-                logs.pop();
-            }
-            
-            localStorage.setItem('lottery_logs', JSON.stringify(logs));
-            loadLogs();
-        }
-        
-        function clearLogs() {
-            if (confirm("确定要清空本地操作日志吗？")) {
-                logs = [];
-                localStorage.setItem('lottery_logs', JSON.stringify(logs));
-                loadLogs();
-                showStatus("log-status", "✅ 本地日志已清空", "success");
-            }
-        }
-        
-        // ================================================
-        // GitHub API 辅助函数
-        // ================================================
-        async function fetchGitHubFile() {
-            const response = await fetch(API_URL, {
-                headers: { 
-                    Authorization: `token ${githubToken}`,
-                    "User-Agent": "yanglway-lottery-admin"
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`无法获取文件: ${response.status}`);
-            }
-            
-            return await response.json();
-        }
-        
-        async function updateGitHubFile(content, message) {
-            const response = await fetch(API_URL, {
+
+        async function updateFile(content, message) {
+            const res = await fetch(API_URL, {
                 method: "PUT",
-                headers: {
-                    Authorization: `token ${githubToken}`,
-                    "Content-Type": "application/json",
-                    "User-Agent": "yanglway-lottery-admin"
-                },
+                headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     message: message,
                     content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-                    sha: currentFileSha
+                    sha: currentSha
                 })
             });
-            
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || "提交失败");
-            }
-            
+            if (!res.ok) throw new Error("提交失败，可能是SHA错误或Token无效");
             return true;
         }
-        
-        async function createBackupFile(backup) {
-            const backupUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/admin-backup.json`;
-            
-            // 先检查文件是否存在
-            let fileSha = null;
-            try {
-                const checkRes = await fetch(backupUrl, {
-                    headers: { Authorization: `token ${githubToken}` }
-                });
-                
-                if (checkRes.ok) {
-                    const fileInfo = await checkRes.json();
-                    fileSha = fileInfo.sha;
-                }
-            } catch (e) {
-                // 文件不存在，创建新文件
+
+        // ==========================================
+        // ➕ 添加开奖
+        // ==========================================
+        async function addLottery() {
+            const period = document.getElementById("period").value;
+            const num1 = document.getElementById("num1").value;
+            const num2 = document.getElementById("num2").value;
+            const time = document.getElementById("time").value;
+
+            if (!period || !num1 || !num2 || !time) {
+                showStatus("add-status", "请填写所有字段！", "error");
+                return;
             }
-            
-            // 创建或更新备份文件
-            const response = await fetch(backupUrl, {
-                method: "PUT",
-                headers: {
-                    Authorization: `token ${githubToken}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "自动备份开奖数据",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(backup, null, 2)))),
-                    sha: fileSha
-                })
-            });
-            
-            return response.ok;
+
+            token = prompt("请输入 GitHub Token (ghp_...):");
+            if (!token) return;
+
+            try {
+                const data = await fetchFile();
+                const newRecord = { period: Number(period), num1: Number(num1), num2: Number(num2), time: new Date(time).toLocaleString() };
+                
+                // 更新数据
+                data.period = newRecord.period;
+                data.num1 = newRecord.num1;
+                data.num2 = newRecord.num2;
+                data.time = newRecord.time;
+                data.history.unshift(newRecord); // 添加到历史最前面
+
+                await updateFile(data, `Add Lottery: Period ${period}`);
+                showStatus("add-status", `✅ 第 ${period} 期开奖已添加！`, "success");
+                loadCurrentData();
+            } catch (e) {
+                showStatus("add-status", `❌ 错误: ${e.message}`, "error");
+            }
         }
-        
-        // ================================================
-        // 工具函数
-        // ================================================
-        function showStatus(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.className = "status " + type;
-            element.style.display = "block";
+
+        // ==========================================
+        // ↩️ 撤回开奖
+        // ==========================================
+        async function undoLottery() {
+            if (!confirm("确定要撤回最近一次开奖吗？")) return;
             
-            // 5秒后自动隐藏
-            setTimeout(() => {
-                element.style.display = "none";
-            }, 5000);
+            token = prompt("请输入 GitHub Token:");
+            if (!token) return;
+
+            try {
+                const data = await fetchFile();
+                if (!data.history || data.history.length === 0) {
+                    throw new Error("没有历史记录可撤回");
+                }
+
+                const removed = data.history.shift(); // 移除第一个
+                
+                if (data.history.length > 0) {
+                    const last = data.history[0];
+                    data.period = last.period;
+                    data.num1 = last.num1;
+                    data.num2 = last.num2;
+                    data.time = last.time;
+                } else {
+                    data.period = 0; data.num1 = 0; data.num2 = 0; data.time = "";
+                }
+
+                await updateFile(data, `Undo Lottery: Period ${removed.period}`);
+                showStatus("undo-status", `✅ 已撤回第 ${removed.period} 期`, "success");
+                loadUndoData();
+            } catch (e) {
+                showStatus("undo-status", `❌ 错误: ${e.message}`, "error");
+            }
         }
-        
-        // 全局错误处理
-        window.addEventListener('error', function(e) {
-            console.error("发生错误:", e.error);
-            alert(`系统错误: ${e.message}\n请检查控制台获取详细信息`);
-        });
+
+        // ==========================================
+        // 📊 界面更新
+        // ==========================================
+        async function loadCurrentData() {
+            try {
+                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH}?t=${Date.now()}`);
+                const data = await res.json();
+                document.getElementById("period").value = data.period + 1;
+                document.querySelector("#tab-add .current-data")?.remove(); // 清理旧显示
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadUndoData() {
+            try {
+                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH}?t=${Date.now()}`);
+                const data = await res.json();
+                document.getElementById("undo-info").innerHTML = `
+                    <div class="history-item">
+                        <strong>第 ${data.period} 期</strong><br>
+                        ${data.num1} / ${data.num2}<br>
+                        ${data.time}
+                    </div>
+                `;
+            } catch (e) { document.getElementById("undo-info").innerHTML = "加载失败"; }
+        }
+
+        function loadLogs() {
+            const logs = JSON.parse(localStorage.getItem('lottery_logs') || '[]');
+            document.getElementById("log-list").innerHTML = logs.map(l => 
+                `<div class="history-item">${l.time} - ${l.action}</div>`
+            ).join('');
+        }
+
+        function showStatus(id, msg, type) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.className = `status ${type}`;
+        }
     </script>
 </body>
 </html>
