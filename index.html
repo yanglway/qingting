@@ -2,11 +2,13 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>财神2D</title>
-<meta http-equiv="refresh" content="5">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 
 <style>
+/* 原有样式完全保留 */
 body {
     margin: 0;
     font-family: "Microsoft YaHei", sans-serif;
@@ -19,6 +21,7 @@ body {
     max-width: 900px;
     margin: auto;
     padding: 30px 20px;
+    padding-bottom: 80px; /* 为悬浮按钮留空间 */
 }
 
 header {
@@ -99,6 +102,133 @@ th {
 td.num {
     font-size: 1.4em;
 }
+
+/* ===== 新增：移动端适配 ===== */
+@media screen and (max-width: 768px) {
+    header h1 {
+        font-size: 2.5em; /* 手机上缩小标题 */
+    }
+    
+    .lottery-box {
+        gap: 40px; /* 手机上减小间距 */
+        margin: 20px 0;
+    }
+    
+    .ball {
+        width: 100px; /* 手机上缩小球 */
+        height: 100px;
+        font-size: 3.5em;
+    }
+    
+    .container {
+        padding: 20px 15px 100px; /* 底部留更多空间给悬浮按钮 */
+    }
+    
+    .datetime {
+        font-size: 1.4em !important; /* 手机上开奖时间更大 */
+    }
+    
+    .recommend-nums {
+        gap: 8px; /* 手机上推荐号码间距更小 */
+    }
+    
+    .recommend-num {
+        font-size: 1em;
+        padding: 2px 6px;
+    }
+}
+
+/* ===== 新增：开奖时间移到球下方 ===== */
+.datetime {
+    text-align: center; /* 居中显示 */
+    font-size: 1.6em; /* 放大字体 */
+    color: #ffd700; /* 金色 */
+    margin-top: 15px; /* 与球保持距离 */
+    font-weight: bold;
+}
+
+/* ===== 新增：新一期记录标红 ===== */
+.new-period {
+    color: #ff4444 !important; /* 红色 */
+    font-weight: bold;
+    animation: pulse 1.5s infinite; /* 轻微闪烁效果 */
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* ===== 新增：悬浮直播按钮 ===== */
+.floating-live-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #ff3333, #cc0000);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-live-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 隐藏原直播按钮 */
+.live-btn {
+    display: none;
+}
+
+/* ===== 新增：推荐号码区域 ===== */
+.myanmar-time {
+    color: #aaa;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.recommend-box {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.recommend-title {
+    color: #ffd700;
+    font-size: 1.2em;
+    margin-bottom: 8px;
+}
+
+.recommend-nums {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.recommend-num {
+    color: #ffd700;
+    font-size: 1.1em;
+    padding: 3px 8px;
+    border: 1px solid #333;
+    border-radius: 3px;
+}
 </style>
 </head>
 
@@ -107,11 +237,12 @@ td.num {
 <div class="container">
     <header>
         <h1>🧧 财神2D 🧧</h1>
-        <div class="datetime" id="datetime"></div>
+        <div class="myanmar-time" id="myanmarTime"></div>
+        <!-- 开奖时间现在显示在球下方 -->
     </header>
 
     <div class="notice">
-        📢 缅甸时间每天晚上6:30封盘 7:00开奖
+        📢 1赔80 缅甸时间每天晚上6:30封盘 7:00开奖
     </div>
 
     <div class="period" id="period"></div>
@@ -121,10 +252,19 @@ td.num {
         <div class="ball blue" id="b2"></div>
     </div>
 
-     <!-- 直播按钮 -->
+    <!-- 开奖时间移到球下方 -->
+    <div class="datetime" id="datetime"></div>
+
+    <div class="recommend-box">
+        <div class="recommend-title">今日推荐号码</div>
+        <div class="recommend-nums" id="recommendNums"></div>
+    </div>
+
+    <!-- 原直播按钮隐藏 -->
     <a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="live-btn">
         🔴 进入直播间
     </a >
+
     <table>
         <thead>
             <tr>
@@ -137,33 +277,90 @@ td.num {
     </table>
 </div>
 
+<!-- 悬浮直播按钮 -->
+<a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="floating-live-btn">
+    🔴 直播中
+</a >
+
 <script>
+// 缅甸实时时间
+function updateMyanmarTime() {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const myanmarTime = new Date(utc + (3600000 * 6.5));
+    const timeStr = myanmarTime.toLocaleString('zh-CN', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    document.getElementById('myanmarTime').textContent = `缅甸时间：${timeStr}`;
+}
+updateMyanmarTime();
+setInterval(updateMyanmarTime, 1000);
+
+// 生成10组不重复推荐号码
+function generateUniqueRecommend() {
+    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    let seed = parseInt(today, 10);
+    const nums = new Set();
+    
+    while (nums.size < 10) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const num = String(seed % 100).padStart(2, '0');
+        nums.add(num);
+    }
+    return Array.from(nums);
+}
+
+// 显示推荐号码
+const recommendNums = generateUniqueRecommend();
+document.getElementById('recommendNums').innerHTML = recommendNums
+    .map(num => `<span class="recommend-num">${num}</span>`)
+    .join('');
+
+// 原fetch逻辑
 const jsonUrl = "https://raw.githubusercontent.com/yanglway/qingting/main/data/result.json?t=" + Date.now();
 
-fetch(jsonUrl)
-.then(res => res.json())
-.then(data => {
-    document.getElementById("period").innerText = `第${data.period}期`;
-    document.getElementById("b1").innerText = data.num1;
-    document.getElementById("b2").innerText = data.num2;
-    document.getElementById("datetime").innerText = data.time;
+function fetchData() {
+    fetch(jsonUrl)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("period").innerText = `第${data.period}期`;
+        document.getElementById("b1").innerText = data.num1;
+        document.getElementById("b2").innerText = data.num2;
+        document.getElementById("datetime").innerText = `开奖时间：${data.time}`;
+        
+        document.getElementById("b1").classList.remove("show");
+        document.getElementById("b2").classList.remove("show");
+        setTimeout(() => {
+            document.getElementById("b1").classList.add("show");
+            document.getElementById("b2").classList.add("show");
+        }, 100);
 
-    setTimeout(() => {
-        document.getElementById("b1").classList.add("show");
-        document.getElementById("b2").classList.add("show");
-    }, 100);
-
-    const tbody = document.getElementById("history");
-    data.history.forEach(r => {
-        tbody.innerHTML += `
-            <tr>
-                <td>第${r.period}期</td>
-                <td>${r.time}</td>
-                <td class="num">${r.num1} ${r.num2}</td>
-            </tr>
-        `;
+        const tbody = document.getElementById("history");
+        tbody.innerHTML = '';
+        
+        // 标记最新一期（第一条记录）
+        if (data.history && data.history.length > 0) {
+            data.history.forEach((r, index) => {
+                const isNew = index === 0; // 第一条是最新一期
+                tbody.innerHTML += `
+                    <tr ${isNew ? 'class="new-period"' : ''}>
+                        <td ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>第${r.period}期</td>
+                        <td ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>${r.time}</td>
+                        <td class="num" ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>${r.num1} ${r.num2}</td>
+                    </tr>
+                `;
+            });
+        }
     });
-});
+}
+
+fetchData();
+setInterval(fetchData, 3000);
 </script>
 
 </body>
