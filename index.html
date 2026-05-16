@@ -322,7 +322,7 @@ document.getElementById('recommendNums').innerHTML = recommendNums
     .join('');
 
 // 原fetch逻辑
-const jsonUrl = "https://raw.githubusercontent.com/yanglway/qingting/main/data/result.json?t=" + Date.now();
+const jsonUrl = "https://qingting.vercel.app/data/result.json?t=" + Date.now();
 
 function fetchData() {
     fetch(jsonUrl)
