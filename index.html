@@ -80,7 +80,7 @@ header h1 {
 
 .ball.green {
     background: radial-gradient(circle at 30% 30%, #4dff88, #009933);
-    display: none; /* 默认隐藏3D球 */
+    /* 移除 display: none，用JS控制 */
 }
 
 .period {
@@ -126,7 +126,6 @@ td.num {
     font-weight: bold;
     transition: all 0.3s;
 }
-
 .game-btn.active {
     background: #ffd700;
     color: #000;
@@ -377,6 +376,7 @@ function switchGame(game) {
     const notice3d = document.getElementById('notice3d');
     const recommendBox = document.getElementById('recommendBox');
     const liveBtn = document.getElementById('liveBtn');
+    const ball3d3 = document.getElementById('b3d3'); // 第三颗球
     
     if (game === '3d') {
         box2d.style.display = 'none';
@@ -385,6 +385,8 @@ function switchGame(game) {
         notice3d.style.display = 'block';
         recommendBox.style.display = 'none';
         liveBtn.style.display = 'none';
+        // ✅ 显示第三颗球
+        if (ball3d3) ball3d3.style.display = 'flex';
     } else {
         box2d.style.display = 'flex';
         box3d.style.display = 'none';
@@ -392,6 +394,8 @@ function switchGame(game) {
         notice3d.style.display = 'none';
         recommendBox.style.display = 'block';
         liveBtn.style.display = 'flex';
+        // ✅ 隐藏第三颗球
+        if (ball3d3) ball3d3.style.display = 'none';
     }
     
     // 清空旧数据
@@ -405,7 +409,7 @@ function fetchData() {
     fetch(url + "?t=" + Date.now())
     .then(res => res.json())
     .then(data => {
-        // 期号显示（直接从JSON读取，不做任何计算）
+        // 期号显示
         document.getElementById("period").innerText = `第${data.period}期`;
         
         // 号码
@@ -418,12 +422,10 @@ function fetchData() {
             document.getElementById("b3d3").innerText = data.num3;
         }
         
-        // 时间显示（3D固定显示规则）
+        // 时间显示
         if (currentGame === '3d') {
-            // 3D显示：每周六 缅甸时间 22:00 + 具体日期
             document.getElementById("datetime").innerText = `每周六 缅甸时间 22:00 (${data.time})`;
         } else {
-            // 2D显示：开奖时间 + 具体时间
             document.getElementById("datetime").innerText = `开奖时间：${data.time}`;
         }
         
