@@ -11,6 +11,7 @@
         .tabs { display: flex; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
         .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; }
         .tab.active { border-bottom: 3px solid #4f46e5; color: #4f46e5; background: white; }
+        .tab-3d { color: #7c3aed; }
         .content { display: none; padding: 30px; }
         .content.active { display: block; }
         .input-group { margin-bottom: 20px; }
@@ -19,12 +20,14 @@
         input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-3d { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
         .status { padding: 12px; border-radius: 8px; margin-top: 20px; text-align: center; display: none; }
         .success { display: block; background: #d1fae5; color: #065f46; border: 2px solid #a7f3d0; }
         .error { display: block; background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
         .info { display: block; background: #dbeafe; color: #1e40af; border: 2px solid #bfdbfe; }
         .current-data { background: #f9fafb; padding: 20px; border-radius: 10px; margin-top: 20px; }
         .history-item { padding: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; }
+        .schedule-badge { background: #f3e8ff; color: #6b21a8; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -35,14 +38,15 @@
         </div>
         
         <div class="tabs">
-            <div class="tab active" onclick="showTab('add')">添加开奖</div>
+            <div class="tab active" onclick="showTab('add')">添加2D开奖</div>
+            <div class="tab tab-3d" onclick="showTab('add3d')">🎲 添加3D开奖</div>
             <div class="tab" onclick="showTab('undo')">撤回记录</div>
             <div class="tab" onclick="showTab('logs')">操作日志</div>
         </div>
         
-        <!-- 添加开奖 -->
+        <!-- 2D 开奖（原封不动） -->
         <div id="tab-add" class="content active">
-            <h2>添加新开奖</h2>
+            <h2>添加新2D开奖</h2>
             <div class="input-group">
                 <label>开奖期号</label>
                 <input type="number" id="period" placeholder="例如: 8">
@@ -59,11 +63,41 @@
                 <label>开奖时间</label>
                 <input type="datetime-local" id="time">
             </div>
-            <button class="btn" onclick="addLottery()">提交开奖</button>
+            <button class="btn" onclick="addLottery()">提交2D开奖</button>
             <div id="add-status" class="status"></div>
         </div>
         
-        <!-- 撤回记录 -->
+        <!-- 3D 开奖（新增，独立） -->
+        <div id="tab-add3d" class="content">
+            <h2>🎲 添加3D开奖</h2>
+            <div class="schedule-badge">
+                ⏰ 3D开奖时间固定为：<strong>每周六 缅甸时间 22:00</strong>
+            </div>
+            <div class="input-group">
+                <label>3D 期号</label>
+                <input type="number" id="period3d" placeholder="例如: 1">
+            </div>
+            <div class="input-group">
+                <label>号码 1 (0-9)</label>
+                <input type="number" id="num1_3d" min="0" max="9">
+            </div>
+            <div class="input-group">
+                <label>号码 2 (0-9)</label>
+                <input type="number" id="num2_3d" min="0" max="9">
+            </div>
+            <div class="input-group">
+                <label>号码 3 (0-9)</label>
+                <input type="number" id="num3_3d" min="0" max="9">
+            </div>
+            <div class="input-group">
+                <label>开奖日期（请选择周六）</label>
+                <input type="date" id="date3d">
+            </div>
+            <button class="btn btn-3d" onclick="addLottery3D()">提交3D开奖</button>
+            <div id="add-status-3d" class="status"></div>
+        </div>
+        
+        <!-- 撤回记录（原封不动） -->
         <div id="tab-undo" class="content">
             <h2>撤回最近一次开奖</h2>
             <p>此操作将删除最新的开奖记录，并恢复到上一条。</p>
@@ -75,7 +109,7 @@
             <div id="undo-status" class="status"></div>
         </div>
         
-        <!-- 操作日志 -->
+        <!-- 操作日志（原封不动） -->
         <div id="tab-logs" class="content">
             <h2>操作日志</h2>
             <div id="log-list"></div>
@@ -84,17 +118,18 @@
 
     <script>
         // ==========================================
-        // ⚙️ 配置区（已根据你的仓库修正）
+        // ⚙️ 基础配置
         // ==========================================
         const CONFIG = {
             USER: "yanglway",
             REPO: "qingting",
-            // 关键修正：文件在 data 文件夹下
-            FILE_PATH: "data/result.json", 
-            ADMIN_PASS: "123456" 
+            FILE_PATH_2D: "data/result.json",
+            FILE_PATH_3D: "data/result3d.json",
+            ADMIN_PASS: "123456"
         };
         
-        const API_URL = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE_PATH}`;
+        const API_2D = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE_PATH_2D}`;
+        const API_3D = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE_PATH_3D}`;
         
         let token = "";
         let currentSha = "";
@@ -110,10 +145,16 @@
                 return;
             }
             
-            // 设置默认时间为现在
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById("time").value = now.toISOString().slice(0, 16);
+            
+            // 设置3D默认日期为本周六
+            const dayOfWeek = now.getDay();
+            const daysUntilSaturday = dayOfWeek === 6 ? 7 : 6 - dayOfWeek;
+            const nextSaturday = new Date(now);
+            nextSaturday.setDate(now.getDate() + daysUntilSaturday);
+            document.getElementById("date3d").value = nextSaturday.toISOString().split('T')[0];
             
             loadCurrentData();
             loadLogs();
@@ -129,18 +170,18 @@
         }
 
         // ==========================================
-        // 📥 读取数据
+        // 📥 通用读写
         // ==========================================
-        async function fetchFile() {
-            const res = await fetch(API_URL, { headers: { Authorization: `token ${token}` } });
-            if (!res.ok) throw new Error("无法读取文件，检查Token权限或文件路径");
+        async function fetchFile(apiUrl) {
+            const res = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+            if (!res.ok) throw new Error("无法读取文件");
             const data = await res.json();
             currentSha = data.sha;
             return JSON.parse(atob(data.content));
         }
 
-        async function updateFile(content, message) {
-            const res = await fetch(API_URL, {
+        async function updateFile(apiUrl, content, message) {
+            const res = await fetch(apiUrl, {
                 method: "PUT",
                 headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -149,112 +190,132 @@
                     sha: currentSha
                 })
             });
-            if (!res.ok) throw new Error("提交失败，可能是SHA错误或Token无效");
+            if (!res.ok) throw new Error("提交失败");
             return true;
         }
 
         // ==========================================
-        // ➕ 添加开奖
+        // ➕ 2D 添加（原封不动）
         // ==========================================
         async function addLottery() {
-            const period = document.getElementById("period").value;
-            const num1 = document.getElementById("num1").value;
-            const num2 = document.getElementById("num2").value;
-            const time = document.getElementById("time").value;
+            const period = period.value;
+            const num1 = num1.value;
+            const num2 = num2.value;
+            const time = time.value;
 
             if (!period || !num1 || !num2 || !time) {
                 showStatus("add-status", "请填写所有字段！", "error");
                 return;
             }
 
-            token = prompt("请输入 GitHub Token (ghp_...):");
-            if (!token) return;
-
-            try {
-                const data = await fetchFile();
-                const newRecord = { period: Number(period), num1: Number(num1), num2: Number(num2), time: new Date(time).toLocaleString() };
-                
-                // 更新数据
-                data.period = newRecord.period;
-                data.num1 = newRecord.num1;
-                data.num2 = newRecord.num2;
-                data.time = newRecord.time;
-                data.history.unshift(newRecord); // 添加到历史最前面
-
-                await updateFile(data, `Add Lottery: Period ${period}`);
-                showStatus("add-status", `✅ 第 ${period} 期开奖已添加！`, "success");
-                loadCurrentData();
-            } catch (e) {
-                showStatus("add-status", `❌ 错误: ${e.message}`, "error");
-            }
-        }
-
-        // ==========================================
-        // ↩️ 撤回开奖
-        // ==========================================
-        async function undoLottery() {
-            if (!confirm("确定要撤回最近一次开奖吗？")) return;
-            
             token = prompt("请输入 GitHub Token:");
             if (!token) return;
 
             try {
-                const data = await fetchFile();
-                if (!data.history || data.history.length === 0) {
-                    throw new Error("没有历史记录可撤回");
-                }
-
-                const removed = data.history.shift(); // 移除第一个
+                const data = await fetchFile(API_2D);
+                const newRecord = { period: Number(period), num1: Number(num1), num2: Number(num2), time: new Date(time).toLocaleString() };
                 
-                if (data.history.length > 0) {
-                    const last = data.history[0];
-                    data.period = last.period;
-                    data.num1 = last.num1;
-                    data.num2 = last.num2;
-                    data.time = last.time;
-                } else {
-                    data.period = 0; data.num1 = 0; data.num2 = 0; data.time = "";
-                }
+                data.period = newRecord.period;
+                data.num1 = newRecord.num1;
+                data.num2 = newRecord.num2;
+                data.time = newRecord.time;
+                data.history.unshift(newRecord);
 
-                await updateFile(data, `Undo Lottery: Period ${removed.period}`);
-                showStatus("undo-status", `✅ 已撤回第 ${removed.period} 期`, "success");
-                loadUndoData();
+                await updateFile(API_2D, data, `Add 2D: ${period}`);
+                showStatus("add-status", `✅ 第 ${period} 期2D开奖已添加！`, "success");
             } catch (e) {
-                showStatus("undo-status", `❌ 错误: ${e.message}`, "error");
+                showStatus("add-status", `❌ ${e.message}`, "error");
             }
         }
 
         // ==========================================
-        // 📊 界面更新
+        // ➕ 3D 添加（新增）
+        // ==========================================
+        async function addLottery3D() {
+            const p = period3d.value;
+            const n1 = num1_3d.value;
+            const n2 = num2_3d.value;
+            const n3 = num3_3d.value;
+            const d = date3d.value;
+
+            if (!p || !n1 || !n2 || !n3 || !d) {
+                showStatus("add-status-3d", "请填写所有字段！", "error");
+                return;
+            }
+
+            token = prompt("请输入 GitHub Token:");
+            if (!token) return;
+
+            try {
+                const data = await fetchFile(API_3D);
+                const timeStr = `${d} 22:00:00`; // 强制周六22点
+                
+                const newRecord = { period: Number(p), num1: Number(n1), num2: Number(n2), num3: Number(n3), time: timeStr };
+                
+                data.period = newRecord.period;
+                data.num1 = newRecord.num1;
+                data.num2 = newRecord.num2;
+                data.num3 = newRecord.num3;
+                data.time = newRecord.time;
+                data.history.unshift(newRecord);
+
+                await updateFile(API_3D, data, `Add 3D: ${p}`);
+                showStatus("add-status-3d", `✅ 第 ${p} 期3D开奖已添加！`, "success");
+            } catch (e) {
+                showStatus("add-status-3d", `❌ ${e.message}`, "error");
+            }
+        }
+
+        // ==========================================
+        // ↩️ 撤回（仅处理2D）
+        // ==========================================
+        async function undoLottery() {
+            if (!confirm("确定要撤回最近一次开奖吗？")) return;
+            token = prompt("请输入 GitHub Token:");
+            if (!token) return;
+
+            try {
+                const data = await fetchFile(API_2D);
+                if (!data.history || data.history.length === 0) throw new Error("没有历史记录");
+                
+                const removed = data.history.shift();
+                if (data.history.length > 0) {
+                    const last = data.history[0];
+                    data.period = last.period; data.num1 = last.num1; data.num2 = last.num2; data.time = last.time;
+                } else {
+                    data.period = 0; data.num1 = 0; data.num2 = 0; data.time = "";
+                }
+
+                await updateFile(API_2D, data, `Undo 2D: ${removed.period}`);
+                showStatus("undo-status", `✅ 已撤回第 ${removed.period} 期`, "success");
+                loadUndoData();
+            } catch (e) {
+                showStatus("undo-status", `❌ ${e.message}`, "error");
+            }
+        }
+
+        // ==========================================
+        // 📊 界面
         // ==========================================
         async function loadCurrentData() {
             try {
-                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH}?t=${Date.now()}`);
+                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH_2D}?t=${Date.now()}`);
                 const data = await res.json();
                 document.getElementById("period").value = data.period + 1;
-                document.querySelector("#tab-add .current-data")?.remove(); // 清理旧显示
-            } catch (e) { console.error(e); }
+            } catch (e) {}
         }
 
         async function loadUndoData() {
             try {
-                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH}?t=${Date.now()}`);
+                const res = await fetch(`https://${CONFIG.USER}.github.io/${CONFIG.REPO}/${CONFIG.FILE_PATH_2D}?t=${Date.now()}`);
                 const data = await res.json();
-                document.getElementById("undo-info").innerHTML = `
-                    <div class="history-item">
-                        <strong>第 ${data.period} 期</strong><br>
-                        ${data.num1} / ${data.num2}<br>
-                        ${data.time}
-                    </div>
-                `;
+                document.getElementById("undo-info").innerHTML = `<div class="history-item"><strong>第 ${data.period} 期</strong><br>${data.num1} / ${data.num2}<br>${data.time}</div>`;
             } catch (e) { document.getElementById("undo-info").innerHTML = "加载失败"; }
         }
 
         function loadLogs() {
             const logs = JSON.parse(localStorage.getItem('lottery_logs') || '[]');
-            document.getElementById("log-list").innerHTML = logs.map(l => 
-                `<div class="history-item">${l.time} - ${l.action}</div>`
-            ).join('');
+            document.getElementById("log-list").innerHTML = logs.map(l => `<div class="history-item">${l.time} - ${l.action}</div>`).join('');
         }
 
         function showStatus(id, msg, type) {
