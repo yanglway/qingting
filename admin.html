@@ -70,7 +70,7 @@
             <div id="add-status-2d" class="status"></div>
         </div>
         
-        <!-- 3D 开奖 -->
+        <!-- 3D 开奖（刚才漏掉的，现在补上了） -->
         <div id="tab-add3d" class="content">
             <h2>🎲 添加3D开奖</h2>
             <div class="schedule-badge">
@@ -156,12 +156,10 @@
                 return;
             }
             
-            // 设置2D默认时间为现在
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById("time2d").value = now.toISOString().slice(0, 16);
             
-            // 设置3D默认日期为本周六
             const dayOfWeek = now.getDay();
             const daysUntilSaturday = dayOfWeek === 6 ? 7 : 6 - dayOfWeek;
             const nextSaturday = new Date(now);
@@ -184,18 +182,10 @@
         function setUndoType(type) {
             undoType = type;
             document.getElementById('undo-type-text').textContent = type.toUpperCase();
-            
-            // 更新按钮状态
             document.getElementById('undo2dBtn').classList.toggle('active', type === '2d');
             document.getElementById('undo3dBtn').classList.toggle('active', type === '3d');
             
-            // 切换API
-            if (type === '2d') {
-                currentApiUrl = API_2D;
-            } else {
-                currentApiUrl = API_3D;
-            }
-            
+            currentApiUrl = type === '2d' ? API_2D : API_3D;
             loadUndoData();
         }
 
@@ -260,7 +250,7 @@
         }
 
         // ==========================================
-        // ➕ 3D 添加
+        // ➕ 3D 添加（核心功能）
         // ==========================================
         async function addLottery3D() {
             const period = document.getElementById("period3d").value;
@@ -271,11 +261,6 @@
 
             if (!period || !num1 || !num2 || !num3 || !date) {
                 showStatus("add-status-3d", "请填写所有字段！", "error");
-                return;
-            }
-
-            if (num1 < 0 || num1 > 9 || num2 < 0 || num2 > 9 || num3 < 0 || num3 > 9) {
-                showStatus("add-status-3d", "3D号码必须是0-9的数字！", "error");
                 return;
             }
 
@@ -303,7 +288,7 @@
         }
 
         // ==========================================
-        // ↩️ 撤回开奖（支持2D和3D）
+        // ↩️ 撤回开奖
         // ==========================================
         async function undoLottery() {
             if (!confirm(`确定要撤回最近一次${undoType.toUpperCase()}开奖吗？`)) return;
