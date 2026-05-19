@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>财神开奖</title>
+<title>财神2D</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +22,7 @@ body {
     max-width: 900px;
     margin: auto;
     padding: 30px 20px;
-    padding-bottom: 80px;
+    padding-bottom: 80px; /* 为悬浮按钮留空间 */
 }
 
 header {
@@ -78,11 +78,6 @@ header h1 {
     background: radial-gradient(circle at 30% 30%, #4da6ff, #003366);
 }
 
-.ball.green {
-    background: radial-gradient(circle at 30% 30%, #4dff88, #009933);
-    display: none;
-}
-
 .period {
     text-align: center;
     font-size: 1.4em;
@@ -109,59 +104,55 @@ td.num {
     font-size: 1.4em;
 }
 
-/* 游戏切换按钮 */
-.game-switch {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.game-btn {
-    padding: 8px 20px;
-    border: 2px solid #ffd700;
-    background: transparent;
-    color: #ffd700;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s;
-}
-
-.game-btn.active {
-    background: #ffd700;
-    color: #000;
-}
-
-/* 移动端适配 */
+/* ===== 新增：移动端适配 ===== */
 @media screen and (max-width: 768px) {
     header h1 {
-        font-size: 2.5em;
+        font-size: 2.5em; /* 手机上缩小标题 */
     }
     
     .lottery-box {
-        gap: 40px;
+        gap: 40px; /* 手机上减小间距 */
+        margin: 20px 0;
     }
     
     .ball {
-        width: 100px;
+        width: 100px; /* 手机上缩小球 */
         height: 100px;
         font-size: 3.5em;
     }
     
+    .container {
+        padding: 20px 15px 100px; /* 底部留更多空间给悬浮按钮 */
+    }
+    
     .datetime {
-        font-size: 1.6em;
-        color: #ffd700;
-        margin-top: 15px;
-        font-weight: bold;
-        text-align: center;
+        font-size: 1.4em !important; /* 手机上开奖时间更大 */
+    }
+    
+    .recommend-nums {
+        gap: 8px; /* 手机上推荐号码间距更小 */
+    }
+    
+    .recommend-num {
+        font-size: 1em;
+        padding: 2px 6px;
     }
 }
 
-.new-period {
-    color: #ff4444 !important;
+/* ===== 新增：开奖时间移到球下方 ===== */
+.datetime {
+    text-align: center; /* 居中显示 */
+    font-size: 1.6em; /* 放大字体 */
+    color: #ffd700; /* 金色 */
+    margin-top: 15px; /* 与球保持距离 */
     font-weight: bold;
-    animation: pulse 1.5s infinite;
+}
+
+/* ===== 新增：新一期记录标红 ===== */
+.new-period {
+    color: #ff4444 !important; /* 红色 */
+    font-weight: bold;
+    animation: pulse 1.5s infinite; /* 轻微闪烁效果 */
 }
 
 @keyframes pulse {
@@ -170,6 +161,7 @@ td.num {
     100% { opacity: 1; }
 }
 
+/* ===== 新增：悬浮直播按钮 ===== */
 .floating-live-btn {
     position: fixed;
     bottom: 20px;
@@ -201,11 +193,12 @@ td.num {
     100% { transform: translateY(0px); }
 }
 
+/* 隐藏原直播按钮 */
 .live-btn {
     display: none;
 }
 
-/* 推荐号码区域 */
+/* ===== 新增：推荐号码区域 ===== */
 .myanmar-time {
     color: #aaa;
     margin-top: 5px;
@@ -237,19 +230,6 @@ td.num {
     border: 1px solid #333;
     border-radius: 3px;
 }
-
-/* 3D 专属样式 */
-.schedule-info {
-    background: rgba(255, 215, 0, 0.1);
-    border: 1px solid #ffd700;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 15px 0;
-    text-align: center;
-    color: #ffd700;
-    font-size: 0.9em;
-    display: none;
-}
 </style>
 </head>
 
@@ -257,46 +237,34 @@ td.num {
 
 <div class="container">
     <header>
-        <h1>🧧 财神开奖 🧧</h1>
-        <div class="game-switch">
-            <button class="game-btn active" onclick="switchGame('2d')">2D开奖</button>
-            <button class="game-btn" onclick="switchGame('3d')">3D开奖</button>
-        </div>
+        <h1>🧧 财神2D 🧧</h1>
         <div class="myanmar-time" id="myanmarTime"></div>
+        <!-- 开奖时间现在显示在球下方 -->
     </header>
 
-    <!-- 2D 公告 -->
-    <div class="notice" id="notice2d">
+    <div class="notice">
         📢 1赔80 缅甸时间每天晚上6:30封盘 7:00开奖
-    </div>
-    
-    <!-- 3D 公告 -->
-    <div class="schedule-info" id="notice3d">
-        ⏰ 3D开奖：每周六 缅甸时间 22:00
     </div>
 
     <div class="period" id="period"></div>
 
-    <!-- 2D 球 -->
-    <div class="lottery-box" id="box2d">
+    <div class="lottery-box">
         <div class="ball red" id="b1"></div>
         <div class="ball blue" id="b2"></div>
     </div>
 
-    <!-- 3D 球 -->
-    <div class="lottery-box" id="box3d" style="display:none;">
-        <div class="ball red" id="b3d1"></div>
-        <div class="ball blue" id="b3d2"></div>
-        <div class="ball green" id="b3d3"></div>
-    </div>
-
+    <!-- 开奖时间移到球下方 -->
     <div class="datetime" id="datetime"></div>
 
-    <!-- 推荐号码（仅2D显示） -->
-    <div class="recommend-box" id="recommendBox">
+    <div class="recommend-box">
         <div class="recommend-title">今日推荐号码</div>
         <div class="recommend-nums" id="recommendNums"></div>
     </div>
+
+    <!-- 原直播按钮隐藏 -->
+    <a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="live-btn">
+        🔴 进入直播间
+    </a >
 
     <table>
         <thead>
@@ -310,10 +278,10 @@ td.num {
     </table>
 </div>
 
-<!-- 悬浮直播按钮（仅2D显示） -->
-<a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="floating-live-btn" id="liveBtn">
+<!-- 悬浮直播按钮 -->
+<a href="https://m.twitch.tv/caishenzihua?desktop-redirect=true" target="_blank" class="floating-live-btn">
     🔴 直播中
-</a>
+</a >
 
 <script>
 // 缅甸实时时间
@@ -334,7 +302,7 @@ function updateMyanmarTime() {
 updateMyanmarTime();
 setInterval(updateMyanmarTime, 1000);
 
-// 生成10组不重复推荐号码（仅2D使用）
+// 生成10组不重复推荐号码
 function generateUniqueRecommend() {
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
     let seed = parseInt(today, 10);
@@ -348,108 +316,43 @@ function generateUniqueRecommend() {
     return Array.from(nums);
 }
 
-// 显示推荐号码（仅2D）
+// 显示推荐号码
 const recommendNums = generateUniqueRecommend();
 document.getElementById('recommendNums').innerHTML = recommendNums
     .map(num => `<span class="recommend-num">${num}</span>`)
     .join('');
 
-// 数据接口 - 完全独立
-const URL_2D = "https://qingting.vercel.app/data/result.json";
-const URL_3D = "https://qingting.vercel.app/data/result3d.json";
-
-let currentGame = '2d';
-
-function switchGame(game) {
-    currentGame = game;
-    
-    // 更新按钮状态
-    document.querySelectorAll('.game-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.includes(game.toUpperCase())) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // 切换显示
-    const box2d = document.getElementById('box2d');
-    const box3d = document.getElementById('box3d');
-    const notice2d = document.getElementById('notice2d');
-    const notice3d = document.getElementById('notice3d');
-    const recommendBox = document.getElementById('recommendBox');
-    const liveBtn = document.getElementById('liveBtn');
-    
-    if (game === '3d') {
-        box2d.style.display = 'none';
-        box3d.style.display = 'flex';
-        notice2d.style.display = 'none';
-        notice3d.style.display = 'block';
-        recommendBox.style.display = 'none';
-        liveBtn.style.display = 'none';
-    } else {
-        box2d.style.display = 'flex';
-        box3d.style.display = 'none';
-        notice2d.style.display = 'block';
-        notice3d.style.display = 'none';
-        recommendBox.style.display = 'block';
-        liveBtn.style.display = 'flex';
-    }
-    
-    // 关键修复：立即清空历史记录，防止显示旧数据
-    document.getElementById('history').innerHTML = '';
-    fetchData();
-}
+// 原fetch逻辑
+const jsonUrl = "https://qingting.vercel.app/data/result.json?t=" + Date.now();
 
 function fetchData() {
-    const url = currentGame === '3d' ? URL_3D : URL_2D;
-    
-    fetch(url + "?t=" + Date.now())
+    fetch(jsonUrl)
     .then(res => res.json())
     .then(data => {
-        // 期号
         document.getElementById("period").innerText = `第${data.period}期`;
-        
-        // 号码
-        if (currentGame === '2d') {
-            document.getElementById("b1").innerText = data.num1;
-            document.getElementById("b2").innerText = data.num2;
-        } else {
-            document.getElementById("b3d1").innerText = data.num1;
-            document.getElementById("b3d2").innerText = data.num2;
-            document.getElementById("b3d3").innerText = data.num3;
-        }
-        
-        // 时间
+        document.getElementById("b1").innerText = data.num1;
+        document.getElementById("b2").innerText = data.num2;
         document.getElementById("datetime").innerText = `开奖时间：${data.time}`;
         
-        // 动画效果
-        const balls = currentGame === '2d' ? 
-            [document.getElementById("b1"), document.getElementById("b2")] : 
-            [document.getElementById("b3d1"), document.getElementById("b3d2"), document.getElementById("b3d3")];
-        
-        balls.forEach(b => b.classList.remove("show"));
-        setTimeout(() => balls.forEach(b => b.classList.add("show")), 100);
+        document.getElementById("b1").classList.remove("show");
+        document.getElementById("b2").classList.remove("show");
+        setTimeout(() => {
+            document.getElementById("b1").classList.add("show");
+            document.getElementById("b2").classList.add("show");
+        }, 100);
 
-        // 历史记录 - 完全重写
         const tbody = document.getElementById("history");
         tbody.innerHTML = '';
         
+        // 标记最新一期（第一条记录）
         if (data.history && data.history.length > 0) {
             data.history.forEach((r, index) => {
-                const isNew = index === 0;
-                let resultHtml = '';
-                
-                if (currentGame === '2d') {
-                    resultHtml = `${r.num1} ${r.num2}`;
-                } else {
-                    resultHtml = `${r.num1} ${r.num2} ${r.num3}`;
-                }
-                
+                const isNew = index === 0; // 第一条是最新一期
                 tbody.innerHTML += `
                     <tr ${isNew ? 'class="new-period"' : ''}>
                         <td ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>第${r.period}期</td>
                         <td ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>${r.time}</td>
-                        <td class="num" ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>${resultHtml}</td>
+                        <td class="num" ${isNew ? 'style="color:#ff4444;font-weight:bold;"' : ''}>${r.num1} ${r.num2}</td>
                     </tr>
                 `;
             });
